@@ -1,0 +1,52 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h2 class="text-center mb-4">Registra el item</h2>
+      <form
+        action="/products/register"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        <div class="form-group">
+          <label for="Title">Title:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Title"
+            name="Title"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="Description">Description:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Description"
+            name="Description"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="Price">Price:</label>
+          <input
+            type="number"
+            class="form-control"
+            id="Price"
+            name="Price"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="ProfilePicture">Thumbnail:</label>
+          <input type="file" name="Thumbnail" required />
+        </div>
+        <button
+          type="submit"
+          class="btn btn-primary btn-block mt-4"
+        >Send</button>
+      </form>
+    </div>
+  </div>
+</div>

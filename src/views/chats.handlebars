@@ -1,0 +1,51 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat</title>
+  </head>
+  <body>
+    <div id="username-form-container">
+      <form id="username-form">
+        <br />
+        <label for="username-input">Ingresa tu Usuario:</label>
+        <input id="username-input" autocomplete="off" required />
+        <button>Entrar</button>
+      </form>
+    </div>
+
+    <div id="chat-container" style="display: none;">
+      <h1>Bienvenido al Chat, <span id="username"></span>!</h1>
+
+      <ul id="messages"></ul>
+
+      <form id="chat-form">
+        <input id="message-input" autocomplete="off" />
+        <button>Send</button>
+      </form>
+    </div>
+
+    <script src="https://cdn.socket.io/4.3.1/socket.io.min.js"></script>
+    <script>
+      const socket = io(); const usernameFormContainer =
+      document.getElementById('username-form-container'); const usernameForm =
+      document.getElementById('username-form'); const usernameInput =
+      document.getElementById('username-input'); const chatContainer =
+      document.getElementById('chat-container'); const usernameDisplay =
+      document.getElementById('username'); const messages =
+      document.getElementById('messages'); const chatForm =
+      document.getElementById('chat-form'); const messageInput =
+      document.getElementById('message-input');
+      usernameForm.addEventListener('submit', (e) => { e.preventDefault(); const
+      username = usernameInput.value.trim(); if (username !== '') {
+      usernameFormContainer.style.display = 'none'; chatContainer.style.display
+      = 'block'; usernameDisplay.innerText = username; } });
+      chatForm.addEventListener('submit', (e) => { e.preventDefault(); const
+      message = messageInput.value.trim(); if (message !== '') { const user =
+      usernameDisplay.innerText; socket.emit('chat message', { user, message });
+      messageInput.value = ''; } }); socket.on('chat message', (data) => { const
+      { user, message } = data; const li = document.createElement('li');
+      li.innerText = `${user}: ${message}`; messages.appendChild(li); });
+    </script>
+  </body>
+</html>

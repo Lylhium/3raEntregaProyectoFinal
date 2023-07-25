@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login</title>
+  </head>
+  <body>
+    <h1>Login de Agustin Hardware</h1>
+
+    <form method="POST" action="/login">
+      <label>Email:</label>
+      <input type="email" name="email" required /><br /><br />
+
+      <label>Password:</label>
+      <input type="password" name="password" required /><br /><br />
+
+      {{#if error}}
+        <p style="color: red;">{{error}}</p>
+      {{/if}}
+      <button type="submit">Login</button>
+    </form>
+
+    <p>¿No tienes una cuenta? <a href="/register">Regístrate</a></p>
+
+    <a href="/auth/github">
+      <img
+        src="https://img.icons8.com/fluent/48/000000/github.png"
+        alt="GitHub"
+      />
+      Iniciar sesión con GitHub
+    </a>
+  </body>
+</html>
