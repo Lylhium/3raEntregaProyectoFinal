@@ -8,7 +8,28 @@ const ticketSchema = new mongoose.Schema({
     type: String,
     unique: true,
     required: true,
+    default: function () {
+      return this._id + "-" + Date.now().toString(36);
+    },
   },
+  idCart: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Cart",
+    required: true,
+  },
+  products: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+        required: true,
+      },
+      quantity: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
 });
 
 const Ticket = mongoose.model("Ticket", ticketSchema);
