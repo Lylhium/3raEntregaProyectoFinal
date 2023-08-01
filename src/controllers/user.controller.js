@@ -1,5 +1,9 @@
 import bcrypt from "bcrypt";
 import User from "../models/user.schema.js";
+//error handlers
+import CustomError from "../services/errors/customError.js";
+import enumErrors from "../services/errors/eNums.js";
+import { generateUserErrorInfo } from "../services/errors/info.js";
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -24,7 +28,19 @@ export const registerUser = async (req, res, next) => {
       age,
       role,
     });
-
+    if (!first_name || !email || !password || !last_name) {
+      CustomError.createError({
+        name: "error en la creacion de user",
+        cause: generateUserErrorInfo({
+          first_name,
+          last_name,
+          email,
+          password,
+        }),
+        message: "error en la creacion del user",
+        code: enumErrors.INVALID_TYPE_ERROR,
+      });
+    }
     // Guardar el usuario en la base de datos
     await newUser.save();
 
@@ -40,13 +56,27 @@ export const authenticateUser = async (email, password) => {
   // Verificación si el correo electrónico existe en la base de datos
   const user = await User.findOne({ email });
   if (!user) {
-    throw new Error("Correo electrónico no registrado");
+    CustomError.createError({
+      name: "error en la autenticación",
+      cause: generateUserErrorInfo({
+        email,
+        message: "El correo electrónico no existe.",
+        code: enumErrors.DATABASE_ERROR,
+      }),
+    });
   }
 
   // Verificación si la contraseña es correcta
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
-    throw new Error("Contraseña incorrecta");
+    CustomError.createError({
+      name: "error en la autenticación",
+      cause: generateUserErrorInfo({
+        email,
+        message: "La contraseña es incorrecta.",
+        code: enumErrors.DATABASE_ERROR,
+      }),
+    });
   }
 
   // Retorno de los datos completos del usuario.
@@ -84,7 +114,14 @@ export const getUserById = async (id) => {
   try {
     const user = await User.findById(id);
     if (!user) {
-      throw new Error("Usuario no encontrado");
+      CustomError.createError({
+        name: "error en la autenticación",
+        cause: generateUserErrorInfo({
+          id,
+          message: "El usuario no existe.",
+          code: enumErrors.DATABASE_ERROR,
+        }),
+      });
     }
     return {
       first_name: user.first_name,
@@ -100,7 +137,14 @@ export const getUserByEmail = async (email) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      throw new Error("Usuario no encontrado");
+      CustomError.createError({
+        name: "error en la autenticación",
+        cause: generateUserErrorInfo({
+          email,
+          message: "El usuario no existe.",
+          code: enumErrors.DATABASE_ERROR,
+        }),
+      });
     }
     return user;
   } catch (error) {

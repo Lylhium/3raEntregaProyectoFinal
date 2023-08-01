@@ -1,5 +1,9 @@
 import ProductManager from "../controllers/products.controller.js";
 import CartModel from "../models/carts.schema.js";
+//handle errors
+//import CustomError from "./errors/customError.js";
+//import enumErrors from "./errors/eNums.js";
+//import { generateProductErrorInfo } from "./errors/info.js";
 
 const productController = {};
 

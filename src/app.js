@@ -15,7 +15,7 @@ import {
   findOrCreateUser,
 } from "./controllers/user.controller.js";
 import cors from "cors";
-
+import errorHandler from "./error/info.js";
 // Server
 const app = express();
 const PORT = config.server;
@@ -104,7 +104,7 @@ passport.deserializeUser(async (id, done) => {
 
 // Ruta principal del servidor y uso de router
 app.use("/", router);
-
+app.use(errorHandler);
 // Rutas de chat utilizando el enrutador chatRouter
 app.use("/chats", chatRouter);
 

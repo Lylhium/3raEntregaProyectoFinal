@@ -95,6 +95,7 @@ router.get("/products/list", ensureAuthenticated, isAdmin, (req, res) => {
   res.render("index", { user });
 });
 
+// Ruta para obtener los datos del usuario actual
 router.get("/current", ensureAuthenticated, (req, res) => {
   if (req.user) {
     const { first_name, last_name, age } = req.user;

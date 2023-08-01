@@ -1,9 +1,22 @@
 import CartModel from "../models/carts.schema.js";
-import ProductModel from "../models/products.schema.js";
-import Ticket from "../models/ticket.schema.js";
+import { generateCartErrorInfo } from "./errors/info.js";
+import enumErrors from "./errors/eNums.js";
+import CustomError from "./errors/customError.js";
 
 const cartsController = {
   addedProducts: [],
+};
+
+cartsController.createCart = async (req, res) => {
+  try {
+    const newCart = new CartModel({});
+    const cart = await newCart.save();
+
+    res.status(201).send(cart);
+  } catch (error) {
+    console.error("Error creating cart", error);
+    res.status(500).send({ error: "Error creating cart" });
+  }
 };
 
 cartsController.getChatter = (req, res) => {
@@ -54,6 +67,17 @@ cartsController.updateCart = async (req, res) => {
       product: product,
       quantity: quantity,
     });
+    if (!product || !quantity) {
+      CustomError.createError({
+        name: "error al agregar productos",
+        cause: generateCartErrorInfo({
+          product,
+          quantity,
+        }),
+        message: "Error al agregar productos",
+        code: enumErrors.DATABASE_ERROR,
+      });
+    }
 
     await cart.save();
 
@@ -63,6 +87,7 @@ cartsController.updateCart = async (req, res) => {
     res.status(500).send({ error: "Error updating cart" });
   }
 };
+
 cartsController.updateProductQuantity = async (req, res) => {
   try {
     const { cid, pid } = req.params;
@@ -103,73 +128,5 @@ cartsController.deleteCart = async (req, res) => {
     res.status(500).send({ error: "Error deleting cart" });
   }
 };
-// Controlador para finalizar el proceso de compra del carrito
-cartsController.purchaseCart = async (req, res) => {
-  try {
-    const { cid } = req.params;
-    const cart = await CartModel.findById(cid).populate("products");
 
-    if (!cart) {
-      return res.status(404).send({ error: "Cart not found" });
-    }
-
-    const productsNotPurchased = [];
-    let totalAmount = 0;
-
-    for (const productItem of cartsController.addedProducts) {
-      const { product, quantity } = productItem;
-      const existingProduct = await ProductModel.findById(product);
-
-      if (!existingProduct) {
-        return res
-          .status(404)
-          .send({ error: `Product with ID ${product} not found` });
-      }
-
-      if (existingProduct.stock >= quantity) {
-        existingProduct.stock -= quantity;
-        await existingProduct.save();
-      } else {
-        productsNotPurchased.push(product);
-      }
-
-      totalAmount += existingProduct.price * quantity;
-    }
-    cartsController.addedProducts = [];
-
-    if (productsNotPurchased.length > 0) {
-      cart.products = cart.products.filter(
-        (productItem) =>
-          !productsNotPurchased.includes(productItem.product.toString())
-      );
-
-      await cart.save();
-      return res.status(400).send({ productsNotPurchased });
-    }
-    const purchaseDate = new Date();
-    const ticket = new Ticket({
-      purchase_dateTime: purchaseDate,
-      amount: totalAmount,
-      purchaser: "Nombre del comprador",
-      idCart: cart._id,
-      products: cart.products,
-    });
-
-    await ticket.save();
-
-    cart.tickets.push(ticket._id);
-    await cart.save();
-
-    // limpieza del cart luego de utilizar endpoint.
-    cart.products = [];
-    await cart.save();
-
-    res
-      .status(200)
-      .send({ success: "Purchase completed successfully", ticket });
-  } catch (error) {
-    console.error("Error purchasing cart", error);
-    res.status(500).send({ error: "Error purchasing cart" });
-  }
-};
 export default cartsController;

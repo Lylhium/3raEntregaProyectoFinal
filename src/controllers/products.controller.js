@@ -22,7 +22,6 @@ class ProductManager {
 
       return result;
     } catch (error) {
-      console.error("Error creating the product", error);
       throw error;
     }
   }
@@ -32,7 +31,14 @@ class ProductManager {
       const products = await productModel.find().lean();
       return products;
     } catch (error) {
-      console.error("Error getting all products", error);
+      CustomError.createError({
+        name: "error obteniendo todos los productos",
+        cause: generateProductErrorInfo({
+          prod,
+        }),
+        message: "error obteniendo todos los productos",
+        code: enumErrors.DATABASE_ERROR,
+      });
       throw error;
     }
   }

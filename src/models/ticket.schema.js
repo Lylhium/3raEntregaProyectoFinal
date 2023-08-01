@@ -9,12 +9,13 @@ const ticketSchema = new mongoose.Schema({
     unique: true,
     required: true,
     default: function () {
+      // Genera un código único utilizando el ID del ticket y la fecha actual
       return this._id + "-" + Date.now().toString(36);
     },
   },
   idCart: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Cart",
+    ref: "Cart", // Cambiar "CartModel" por "Cart" para que coincida con el nombre del modelo
     required: true,
   },
   products: [
