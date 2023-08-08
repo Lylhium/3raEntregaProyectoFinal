@@ -5,6 +5,8 @@ import CartModel from "../models/carts.schema.js";
 //import enumErrors from "./errors/eNums.js";
 //import { generateProductErrorInfo } from "./errors/info.js";
 
+import log from "../../config/devLogger.js";
+
 const productController = {};
 
 productController.getAllProducts = async (req, res) => {
@@ -14,7 +16,7 @@ productController.getAllProducts = async (req, res) => {
 
     res.render("products", { products });
   } catch (error) {
-    console.error("Error al obtener los productos", error);
+    log.error(` error getting the products ${error} `);
     res.status(500).send("Error al obtener los productos");
   }
 };
@@ -64,9 +66,10 @@ productController.registerProduct = async (req, res) => {
 
     await cart.save();
 
+    log.info(`product created!`);
     res.status(200).send({ success: "Product created!" });
   } catch (error) {
-    console.error("Error creating the product", error);
+    log.error(`error creating the product, ${error}`);
     res.status(500).send({ error: "Error creating the product" });
   }
 };
@@ -80,9 +83,9 @@ productController.getProductsList = async (req, res) => {
 
     res.render("index", { products: products, user: req.session.user });
 
-    console.log(req.session.user);
+    log.info(`session user: ${req.session.user}`);
   } catch (error) {
-    console.error("Error al obtener la lista de productos", error);
+    log.error(`error getting the product list ${error}`);
     res.status(500).send("Error al obtener la lista de productos");
   }
 };

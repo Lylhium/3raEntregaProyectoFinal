@@ -1,4 +1,5 @@
 // messageController.mjs
+import log from "../../config/devLogger.js";
 import Message from "../models/message.schema.js";
 
 // Obtener todos los mensajes
@@ -7,7 +8,7 @@ export const getAllMessages = async (req, res) => {
     const messages = await Message.find();
     res.json(messages);
   } catch (error) {
-    console.error(error);
+    log.error(`error getting messages, ${error}`);
     res.status(500).json({ error: "Error al obtener los mensajes" });
   }
 };
@@ -20,7 +21,7 @@ export const createMessage = async (req, res) => {
     await newMessage.save();
     res.json(newMessage);
   } catch (error) {
-    console.error(error);
+    log.error(`error creating messages ${error}`);
     res.status(500).json({ error: "Error al crear el mensaje" });
   }
 };

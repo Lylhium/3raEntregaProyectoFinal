@@ -16,12 +16,14 @@ import {
 } from "./controllers/user.controller.js";
 import cors from "cors";
 import errorHandler from "./error/info.js";
+import log from "../config/devLogger.js";
+
 // Server
 const app = express();
 const PORT = config.server;
 
 const server = app.listen(PORT, () => {
-  console.log(`Server running on ${PORT}`);
+  log.info(`server running on ${PORT}`);
 });
 
 // Middlewares

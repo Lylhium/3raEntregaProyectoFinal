@@ -6,6 +6,7 @@ import {
 import Message from "../models/message.schema.js";
 import { Server } from "socket.io";
 import sessionMiddleware from "../../config/session.js";
+import log from "../../config/devLogger.js";
 
 const chatRouter = express.Router();
 
@@ -15,7 +16,7 @@ io.use((socket, next) => {
   sessionMiddleware(socket.request, socket.request.res, next);
 });
 io.on("connection", (socket) => {
-  console.log("User connected.");
+  log.info(`user connected.`);
   // Obtener el usuario de la sesión
   const { user } = socket.request.session;
   // Escuchar el evento 'chat message'
@@ -24,13 +25,14 @@ io.on("connection", (socket) => {
     // Guardar el mensaje en MongoDB
     const newMessage = new Message({ user, message });
     await newMessage.save();
-    console.log("Mensaje guardado en MongoDB");
+
+    log.info(` mensaje guardado en mongoDB`);
     // Emitir el evento 'chat message' a todos los clientes conectados
     io.emit("chat message", data);
   });
   // Desconexión del usuario del socket.io
   socket.on("disconnect", () => {
-    console.log("User disconnected.");
+    log.warn(`user disconnected.`);
   });
 });
 

@@ -1,3 +1,4 @@
+import log from "../../config/devLogger.js";
 import CartModel from "../models/carts.schema.js";
 import ProductModel from "../models/products.schema.js";
 import TicketModel from "../models/ticket.schema.js";
@@ -10,7 +11,10 @@ ticketController.createTicket = async (req, res, addedProducts) => {
     const cart = await CartModel.findById(cid).populate("products");
 
     if (!cart) {
-      return res.status(404).send({ error: "Cart not found" });
+      return (
+        log.warn(`cart not found.`),
+        res.status(404).send({ error: "Cart not found" })
+      );
     }
 
     const productsNotPurchased = [];
@@ -73,7 +77,7 @@ ticketController.createTicket = async (req, res, addedProducts) => {
       .status(200)
       .send({ success: "Purchase completed successfully", ticket });
   } catch (error) {
-    console.error("Error purchasing cart", error);
+    log.error(`error purchasin cart ${error}`);
     res.status(500).send({ error: "Error purchasing cart" });
   }
 };

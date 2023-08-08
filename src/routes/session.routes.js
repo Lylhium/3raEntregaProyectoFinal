@@ -6,7 +6,7 @@ import { registerUser, logoutUser } from "../controllers/user.controller.js";
 import bodyParser from "body-parser";
 import passport from "../utils/passport.js";
 import config from "../utils/config.js";
-
+import log from "../../config/devLogger.js";
 const router = Router();
 
 // Configuración de middlewares
@@ -103,6 +103,16 @@ router.get("/current", ensureAuthenticated, (req, res) => {
   } else {
     res.status(401).json({ message: "No hay una sesión activa" });
   }
+});
+
+router.get("/loggerTest", (req, res) => {
+  log.fatal("test de log Fatal");
+  log.error("test de log Error");
+  log.warning("test de log warn");
+  log.info("test de log info");
+  log.debug("test de log debug");
+
+  res.send("loggers registered on console.");
 });
 
 export default router;
