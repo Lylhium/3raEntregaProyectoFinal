@@ -8,12 +8,6 @@ import router from "./routes/index.routes.js";
 import { chatRouter, io } from "./routes/chat.routes.js";
 import sessionMiddleware from "../config/session.js";
 import passport from "passport";
-import LocalStrategy from "passport-local";
-import { Strategy as GitHubStrategy } from "passport-github";
-import {
-  authenticateUser,
-  findOrCreateUser,
-} from "./controllers/user.controller.js";
 import cors from "cors";
 import errorHandler from "./error/info.js";
 import log from "../config/devLogger.js";
@@ -21,7 +15,6 @@ import log from "../config/devLogger.js";
 // Server
 const app = express();
 const PORT = config.server;
-
 const server = app.listen(PORT, () => {
   log.info(`server running on ${PORT}`);
 });
@@ -47,66 +40,12 @@ app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Configuración de la estrategia de autenticación local
-passport.use(
-  new LocalStrategy(
-    { usernameField: "email" },
-    async (email, password, done) => {
-      try {
-        const user = await authenticateUser(email, password);
-        if (!user) {
-          return done(null, false, { message: "Credenciales inválidas" });
-        }
-        return done(null, user);
-      } catch (error) {
-        return done(error);
-      }
-    }
-  )
-);
-
-// Configuración de la estrategia de autenticación de GitHub
-passport.use(
-  new GitHubStrategy(
-    {
-      clientID: "669021d7483928f0cbc4",
-      clientSecret: "b9c55cc02b7114859d48ec1b031f603016fe43c8",
-      callbackURL: "/auth/github/callback",
-    },
-    async (_, __, profile, done) => {
-      try {
-        const wrappedDone = (error, user) => {
-          if (error) {
-            return done(error);
-          }
-          return done(null, user);
-        };
-        await findOrCreateUser(profile, wrappedDone);
-      } catch (error) {
-        return done(error);
-      }
-    }
-  )
-);
-
-// Serialización del usuario
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-// Deserialización del usuario
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await getUserById(id);
-    done(null, user);
-  } catch (error) {
-    done(error);
-  }
-});
-
 // Ruta principal del servidor y uso de router
 app.use("/", router);
+
+// Error handler
 app.use(errorHandler);
+
 // Rutas de chat utilizando el enrutador chatRouter
 app.use("/chats", chatRouter);
 

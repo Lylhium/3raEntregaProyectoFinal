@@ -1,0 +1,118 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agustin Hardware</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 0; padding: 0;
+      background-color: #454545; } .container { max-width: 1200px; margin: 0
+      auto; padding: 20px; background-color: #ffffff; box-shadow: 0 2px 4px
+      rgba(0, 0, 0, 0.1); } h1 { color: #333333; margin-bottom: 20px; } button {
+      background-color: #3a8749; color: #ffffff; border: none; padding: 10px
+      20px; cursor: pointer; } button:hover { background-color: #1a431d; } h2 {
+      font-size: 24px; margin-top: 20px; } table { width: 100%; border-collapse:
+      collapse; } th, td { border: 1px solid #dddddd; padding: 8px; text-align:
+      left; } th { background-color: #f2f2f2; } img { max-width: 50px;
+      max-height: 50px; } /* Estilos adicionales para los nuevos atributos */
+      #product-list { list-style: none; padding: 0; } .product { border: 1px
+      solid #ddd; border-radius: 4px; padding: 10px; margin-bottom: 10px;
+      background-color: #f9f9f9; display: flex; justify-content: space-between;
+      align-items: center; } .product-title { font-weight: bold; }
+      .product-description { padding-left: 5px; flex: 2; margin-right: 10px; }
+      .product-price { font-weight: bold; color: #3a8749; } /* Estilos para el
+      formulario de creación de productos */ #create-product-form { margin-top:
+      20px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;
+      background-color: #f9f9f9; } #create-product-form label,
+      #create-product-form input, #create-product-form textarea,
+      #create-product-form button { margin-top: 10px; width: 100%; padding: 8px;
+      border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+      #create-product-form button { background-color: #3a8749; color: #ffffff;
+      border: none; cursor: pointer; } #create-product-form button:hover {
+      background-color: #1a431d; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Agustin Hardware</h1>
+
+      <form action="/logout" method="GET">
+        <button type="submit">Logout</button>
+      </form>
+
+      <br />
+
+      {{#if user}}
+        <h1>Bienvenido, {{user.first_name}}</h1>
+        <p>Email: {{user.email}}</p>
+        <p>Nombre: {{user.first_name}}</p>
+        <p>Apellido: {{user.last_name}}</p>
+        <p>Edad: {{user.age}}</p>
+        <p>Rol: {{user.role}}</p>
+
+        <h2>Tus Productos creados:</h2>
+        <ul id="user-product-list">
+          <!-- La lista de productos del usuario se llena dinámicamente. -->
+        </ul>
+
+        <h2>Todos los Productos:</h2>
+        <ul id="all-product-list">
+          <!-- La lista de todos los productos se llena dinámicamente. -->
+        </ul>
+
+        <h2>Crear Producto:</h2>
+        <form
+          id="create-product-form"
+          action="/products"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <label for="title">Título:</label>
+          <input type="text" name="title" required />
+
+          <label for="description">Descripción:</label>
+          <textarea name="description" required></textarea>
+
+          <label for="price">Precio:</label>
+          <input type="number" name="price" required />
+
+          <label for="thumbnail">Imagen:</label>
+          <input type="file" name="thumbnail" accept="image/*" required />
+
+          <button type="submit">Crear Producto</button>
+        </form>
+
+        <script>
+          async function getUserProducts() { try { const response = await
+          fetch("/user/products"); const data = await response.json(); const
+          productList = document.getElementById("user-product-list");
+          productList.innerHTML = ""; data.products.forEach((product) => { const
+          listItem = document.createElement("li"); listItem.innerHTML = ` <div
+          class="product"> <div class="product-title">${product.title}</div>
+          <div class="product-description">${product.description}</div> <div
+          class="product-price">$${product.price}</div> </div> `;
+          productList.appendChild(listItem); }); } catch (error) {
+          console.error("Error al obtener los productos del usuario:", error); }
+          } window.addEventListener("DOMContentLoaded", () => {
+          getUserProducts(); });
+        </script>
+
+        <script>
+          async function getAllProducts() { try { const response = await
+          fetch("/all-products"); const data = await response.json(); const
+          productList = document.getElementById("all-product-list");
+          productList.innerHTML = ""; data.products.forEach((product) => { const
+          listItem = document.createElement("li"); listItem.innerHTML = ` <div
+          class="product"> <div class="product-title">${product.title}</div>
+          <div class="product-description">${product.description}</div> <div
+          class="product-price">$${product.price}</div> <div
+          class="product-owner">Owner: ${product.owner || "admin"}</div> </div>
+          `; productList.appendChild(listItem); }); } catch (error) {
+          console.error("Error al obtener los productos:", error); } }
+          window.addEventListener("DOMContentLoaded", () => { getAllProducts();
+          });
+        </script>
+
+      {{/if}}
+    </div>
+  </body>
+</html>

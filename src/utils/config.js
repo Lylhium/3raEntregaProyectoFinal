@@ -11,4 +11,8 @@ config.db = {
   cn: process.env.dbName,
 };
 
+config.jwt = {
+  token: process.env.JWT_SECRET,
+};
+
 export default config;

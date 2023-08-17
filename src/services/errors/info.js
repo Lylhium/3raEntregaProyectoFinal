@@ -10,10 +10,10 @@ export const generateUserErrorInfo = (newUser) => {
 export const generateProductErrorInfo = (product) => {
   return `One or more properties were incomplete or not valid.
   List of required Properties:
-  * Title: needs to be a string, received: ${product.Title}
-  * Price: needs to be a number, received:  ${product.Price}
-  * Description: needs to be a string, received:  ${product.Description}
-  * Thumbnail: needs to be a string, received:  ${product.filename}`;
+  * Title: needs to be a string, received: ${product.title}
+  * Price: needs to be a number, received:  ${product.price}
+  * Description: needs to be a string, received:  ${product.description}
+  * Thumbnail: needs to be a string, received:  ${product.thumbnail}`;
 };
 
 export const generateCartErrorInfo = (cart) => {

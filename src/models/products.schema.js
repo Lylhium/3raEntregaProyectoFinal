@@ -19,6 +19,11 @@ const schema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: "admin",
+  },
 });
 
 schema.plugin(mongoosePaginate);

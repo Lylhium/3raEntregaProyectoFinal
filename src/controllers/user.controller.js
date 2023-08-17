@@ -4,6 +4,10 @@ import User from "../models/user.schema.js";
 import CustomError from "../services/errors/customError.js";
 import enumErrors from "../services/errors/eNums.js";
 import { generateUserErrorInfo } from "../services/errors/info.js";
+import transporter from "../utils/mailer.js";
+//jsonwebtoken
+import jwt from "jsonwebtoken";
+import config from "../utils/config.js";
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -85,6 +89,7 @@ export const authenticateUser = async (email, password) => {
     last_name: user.last_name,
     age: user.age,
     email: user.email,
+    role: user.role,
   };
 };
 
@@ -100,7 +105,7 @@ export const loginUser = async (req, res, next) => {
       if (err) {
         return next(err);
       }
-      res.redirect("/products/list"); // Redireccionar al listado de productos
+      res.redirect("/products/list");
     });
   } catch (error) {
     console.error("Error al iniciar sesión:", error);
@@ -128,6 +133,7 @@ export const getUserById = async (id) => {
       last_name: user.last_name,
       age: user.age,
       email: user.email,
+      role: user.role,
     };
   } catch (error) {
     throw error;
@@ -188,6 +194,7 @@ export const findOrCreateUser = async (profile, done) => {
         email,
         password: "placeholder",
         age: 18,
+        role,
       });
 
       await newUser.save();
@@ -195,5 +202,93 @@ export const findOrCreateUser = async (profile, done) => {
     }
   } catch (error) {
     return done(error);
+  }
+};
+
+export const sendPasswordResetEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "El usuario no existe." });
+    }
+
+    // Generacion el token JWT para el restablecimiento de contraseña
+    const token = jwt.sign({ userId: user._id }, config.jwt.token, {
+      expiresIn: "1h",
+    });
+
+    const mailOptions = {
+      from: "pfarherra@gmail.com",
+      to: user.email,
+      subject: "Recuperación de contraseña",
+      html: `<p>Hola ${user.first_name},</p><p>Para restablecer tu contraseña, haz clic en el siguiente enlace: <a href="${process.env.BASE_URL}reset-password/${token}">Restablecer contraseña</a></p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res
+      .status(200)
+      .json({ message: "Correo de recuperación de contraseña enviado." });
+  } catch (error) {
+    console.error("Error al enviar el correo de recuperación:", error);
+    res
+      .status(500)
+      .json({ message: "Error al enviar el correo de recuperación." });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+
+  try {
+    // Decodificando el token
+    const decodedToken = jwt.verify(token, config.jwt.token);
+    const userId = decodedToken.userId;
+
+    // getting user from DB
+    const user = await User.findById(userId);
+    if (!user) {
+      CustomError.createError({
+        name: "user not found",
+        cause: generateUserErrorInfo({
+          user,
+          message: "El usuario no existe.",
+          code: enumErrors.DATABASE_ERROR,
+        }),
+      });
+      return res.status(404).json({ message: "user not found" });
+    }
+    // if current Password is the same :
+    const isPasswordSame = await bcrypt.compare(password, user.password);
+    if (isPasswordSame) {
+      CustomError.createError({
+        name: "password cannot be the same as the current one.",
+        cause: generateUserErrorInfo({
+          password,
+          message:
+            "La nueva contraseña no puede ser igual a la contraseña actual",
+          code: enumErrors.DATABASE_ERROR,
+        }),
+      });
+      return res.status(400).json({
+        message: "password cannot be the same as the current one.",
+      });
+    }
+    // new password encrypt
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // updating password in DB
+    await User.findByIdAndUpdate(userId, { password: hashedPassword });
+
+    res.status(200).json({ message: "Contraseña restablecida con éxito" });
+  } catch (error) {
+    if (error.name === "JsonWebTokenError" && error.message === "jwt expired") {
+      return res.redirect("/forgot-password");
+    }
+
+    res.status(500).json({ message: "Error al restablecer la contraseña" });
   }
 };

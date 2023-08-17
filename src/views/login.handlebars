@@ -1,32 +1,56 @@
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Agustin Hardware</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 0; padding: 0;
+      background-color: #454545; display: flex; justify-content: center;
+      align-items: center; height: 100vh; } .login-container { background-color:
+      #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); padding: 20px;
+      border-radius: 5px; width: 300px; text-align: center; } h1 { color:
+      #333333; margin-bottom: 20px; } label { display: block; margin-bottom:
+      5px; color: #555555; } input { width: 100%; padding: 10px; margin-bottom:
+      10px; border: 1px solid #dddddd; border-radius: 5px; } .error-message {
+      color: red; margin-top: 5px; } button { background-color: #3a8749; color:
+      #ffffff; border: none; padding: 10px 20px; border-radius: 5px; cursor:
+      pointer; transition: background-color 0.3s ease; } button:hover {
+      background-color: #1a431d; } a { color: #007bff; text-decoration: none; }
+      a:hover { text-decoration: underline; } .github-login { margin-top: 15px;
+      }
+    </style>
   </head>
   <body>
-    <h1>Login de Agustin Hardware</h1>
+    <div class="login-container">
+      <h1>💥Agustin Hardware</h1>
 
-    <form method="POST" action="/login">
-      <label>Email:</label>
-      <input type="email" name="email" required /><br /><br />
+      <form method="POST" action="/login">
+        <label>Email:</label>
+        <input type="email" name="email" required /><br />
 
-      <label>Password:</label>
-      <input type="password" name="password" required /><br /><br />
+        <label>Password:</label>
+        <input type="password" name="password" required /><br />
 
-      {{#if error}}
-        <p style="color: red;">{{error}}</p>
-      {{/if}}
-      <button type="submit">Login</button>
-    </form>
+        {{#if error}}
+          <p class="error-message">{{error}}</p>
+        {{/if}}
+        <button type="submit">Login</button>
+      </form>
 
-    <p>¿No tienes una cuenta? <a href="/register">Regístrate</a></p>
+      <p>¿Olvidaste tu contraseña?
+        <a href="/forgot-password">Recupérala aquí</a></p>
 
-    <a href="/auth/github">
-      <img
-        src="https://img.icons8.com/fluent/48/000000/github.png"
-        alt="GitHub"
-      />
-      Iniciar sesión con GitHub
-    </a>
+      <p>¿No tienes una cuenta? <a href="/register">Regístrate</a></p>
+
+      <div class="github-login">
+        <a href="/auth/github">
+          <img
+            src="https://img.icons8.com/fluent/48/000000/github.png"
+            alt="GitHub"
+          />
+          Iniciar sesión con GitHub
+        </a>
+      </div>
+    </div>
   </body>
 </html>

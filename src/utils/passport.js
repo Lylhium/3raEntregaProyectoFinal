@@ -8,10 +8,8 @@ import {
 } from "../controllers/user.controller.js";
 //import mongoose from "mongoose";
 
-// Configuración de la estrategia de autenticación local
 passport.use(
   new LocalStrategy(
-    "userAuthentication",
     { usernameField: "email" },
     async (email, password, done) => {
       try {
@@ -26,7 +24,6 @@ passport.use(
     }
   )
 );
-
 //github authentication
 passport.use(
   new GitHubStrategy(
@@ -59,16 +56,17 @@ passport.serializeUser((user, done) => {
     first_name: user.first_name,
     last_name: user.last_name,
     age: user.age,
+    role: user.role,
   };
   done(null, serializedUser);
 });
 
 passport.deserializeUser(async (serializedUser, done) => {
   try {
-    console.log("Usuario serializado:", serializedUser);
+    console.log(serializedUser);
 
     const user = await getUserByEmail(serializedUser.email);
-    console.log("Usuario:", user);
+    //console.log("Usuario:", user);
 
     done(null, user);
   } catch (error) {
