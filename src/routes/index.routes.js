@@ -1,14 +1,14 @@
 import express from "express";
-import productRoutes from "./products.routes.js";
-import cartRoutes from "./carts.routes.js";
 import sessionRoutes from "./session.routes.js";
 import ticketRoutes from "./ticket.routes.js";
+import productRoutes from "./product.routes.js";
+import cartRoutes from "./cart.routes.js";
 const router = express.Router();
 router.use(express.json());
 
-router.use(productRoutes);
-router.use(cartRoutes);
 router.use(sessionRoutes);
 router.use(ticketRoutes);
+router.use(productRoutes);
+router.use(cartRoutes);
 
 export default router;

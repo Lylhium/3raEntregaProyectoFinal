@@ -5,12 +5,13 @@ import { engine } from "express-handlebars";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import router from "./routes/index.routes.js";
-import { chatRouter, io } from "./routes/chat.routes.js";
 import sessionMiddleware from "../config/session.js";
 import passport from "passport";
 import cors from "cors";
 import errorHandler from "./error/info.js";
 import log from "../config/devLogger.js";
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUiExpress from "swagger-ui-express";
 
 // Server
 const app = express();
@@ -33,6 +34,22 @@ const publics = join(__dirname, "./public");
 app.set("views", join(__dirname, "views"));
 app.use(express.static(publics));
 
+// swagger
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.1",
+    info: {
+      title: "agustin hardware documentation",
+      description: "swagger",
+    },
+  },
+  apis: [`${__dirname}/docs/**/*.yaml`],
+};
+
+const specs = swaggerJSDoc(swaggerOptions);
+
+app.use("/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
+
 // Aplicacion del middleware de sesión antes de las rutas
 app.use(sessionMiddleware);
 
@@ -45,14 +62,3 @@ app.use("/", router);
 
 // Error handler
 app.use(errorHandler);
-
-// Rutas de chat utilizando el enrutador chatRouter
-app.use("/chats", chatRouter);
-
-// Configuración de socket.io
-io.attach(server);
-
-// Página de chat
-app.get("/chat", (req, res) => {
-  res.render("chats");
-});

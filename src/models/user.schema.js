@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import CartItem from "./cart.schema.js";
 
 const userSchema = new mongoose.Schema({
   first_name: { type: String, required: true },
@@ -9,6 +10,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ["user", "admin", "premium"], default: "user" },
   products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+  carts: [CartItem.schema],
 });
 
 // método para comparar contraseñas

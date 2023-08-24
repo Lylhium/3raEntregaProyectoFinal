@@ -292,3 +292,28 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ message: "Error al restablecer la contraseña" });
   }
 };
+
+export const updateUserRole = async (req, res) => {
+  const userId = req.params.id;
+  const newRole = req.body.newRole;
+
+  try {
+    // Encuentra el usuario por su ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Actualiza el rol del usuario
+    user.role = newRole;
+    await user.save();
+
+    res
+      .status(200)
+      .json({ message: "Rol de usuario actualizado exitosamente" });
+  } catch (error) {
+    console.error("Error al actualizar el rol del usuario:", error);
+    res.status(500).json({ message: "Error al actualizar el rol del usuario" });
+  }
+};

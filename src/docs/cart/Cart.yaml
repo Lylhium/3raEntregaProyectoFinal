@@ -1,0 +1,86 @@
+swagger: "2.0"
+info:
+  title: Documentación de la API de Carritos
+  version: 1.0.0
+paths:
+  /carts/add:
+    post:
+      summary: Agrega un producto al carrito
+      tags:
+        - Carritos
+      parameters:
+        - name: productId
+          in: body
+          required: true
+          schema:
+            type: string
+            description: ID del producto a agregar al carrito (utilizar productId)
+      responses:
+        "200":
+          description: Producto agregado al carrito exitosamente
+        "500":
+          description: Error interno del servidor
+
+  /carts/cart:
+    get:
+      summary: Obtiene el contenido del carrito de un usuario autenticado
+      tags:
+        - Carritos
+      responses:
+        "200":
+          description: Carrito obtenido exitosamente
+        "500":
+          description: Error interno del servidor
+
+  /carts/edit/{productId}:
+    put:
+      summary: Edita la cantidad de un producto en el carrito (con user autenticado)
+      tags:
+        - Carritos
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          type: string
+          description: ID del producto en el carrito que se va a editar
+        - name: quantity
+          in: body
+          required: true
+          schema:
+            type: integer
+            description: Nueva cantidad del producto en el carrito
+      responses:
+        "200":
+          description: Cantidad del producto en el carrito editada exitosamente
+        "500":
+          description: Error interno del servidor
+
+  /carts/remove/{productId}:
+    delete:
+      summary: Elimina un producto del carrito ( con user autenticado )
+      tags:
+        - Carritos
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          type: string
+          description: ID del producto en el carrito que se va a eliminar
+      responses:
+        "200":
+          description: Producto eliminado del carrito exitosamente
+        "500":
+          description: Error interno del servidor
+
+components:
+  schemas:
+    CartItem:
+      type: object
+      properties:
+        productId:
+          type: string
+          description: ID del producto en el carrito
+        quantity:
+          type: integer
+          default: 1
+          description: Cantidad del producto en el carrito (por defecto, 1)

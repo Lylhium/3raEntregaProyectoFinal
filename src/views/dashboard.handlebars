@@ -48,6 +48,25 @@
         <p>Apellido: {{user.last_name}}</p>
         <p>Edad: {{user.age}}</p>
         <p>Rol: {{user.role}}</p>
+        <p>id: {{user.id}}</p>
+
+        <!-- Formulario para cambiar a Admin -->
+        <form action="/users/updateRole/{{user.id}}" method="POST">
+          <input type="hidden" name="newRole" value="admin" />
+          <button type="submit">Cambiar Rol a Admin</button>
+        </form>
+
+        <!-- Formulario para cambiar a Premium -->
+        <form action="/users/updateRole/{{user.id}}" method="POST">
+          <input type="hidden" name="newRole" value="premium" />
+          <button type="submit">Cambiar Rol a Premium</button>
+        </form>
+
+        <!-- Formulario para cambiar a User -->
+        <form action="/users/updateRole/{{user.id}}" method="POST">
+          <input type="hidden" name="newRole" value="user" />
+          <button type="submit">Cambiar Rol a User</button>
+        </form>
 
         <h2>Tus Productos creados:</h2>
         <ul id="user-product-list">
@@ -58,6 +77,17 @@
         <ul id="all-product-list">
           <!-- La lista de todos los productos se llena dinámicamente. -->
         </ul>
+
+        <h2>Comprar Producto:</h2>
+        <form id="buy-product-form" action="/cart/add" method="POST">
+          <label for="productId">ID del Producto:</label>
+          <input type="text" name="productId" required />
+
+          <label for="quantity">Cantidad:</label>
+          <input type="number" name="quantity" required />
+
+          <button type="submit">Comprar Producto</button>
+        </form>
 
         <h2>Crear Producto:</h2>
         <form

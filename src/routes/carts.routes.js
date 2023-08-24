@@ -18,6 +18,4 @@ router.delete(
   cartsController.removeProductFromCart
 );
 
-router.get("/chatter", cartsController.getChatter);
-
 export default router;

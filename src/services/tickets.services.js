@@ -1,6 +1,6 @@
 import log from "../../config/devLogger.js";
 import CartModel from "../models/carts.schema.js";
-import ProductModel from "../models/products.schema.js";
+//import ProductModel from "../models/products.schema.js";
 import TicketModel from "../models/ticket.schema.js";
 
 const ticketController = {};
