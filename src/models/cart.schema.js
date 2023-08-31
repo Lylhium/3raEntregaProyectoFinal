@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import db from "../../config/db.js";
 
 const cartItemSchema = new mongoose.Schema({
   productId: {
@@ -9,6 +10,6 @@ const cartItemSchema = new mongoose.Schema({
   quantity: { type: Number, default: 1 },
 });
 
-const CartItem = mongoose.model("CartItem", cartItemSchema);
+const CartItem = db.model("CartItem", cartItemSchema);
 
 export default CartItem;

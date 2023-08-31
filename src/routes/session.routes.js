@@ -1,7 +1,7 @@
 import express from "express";
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import { Router } from "express";
+
 import {
   registerUser,
   logoutUser,
@@ -14,15 +14,14 @@ import passport from "../utils/passport.js";
 import config from "../utils/config.js";
 //import log from "../../config/devLogger.js";
 
-const router = Router();
-
+const router = express.Router();
 // Configuración de middlewares
 router.use(express.json());
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
 const sessionStore = MongoStore.create({
-  mongoUrl: `${config.db.cs}+${config.db.cn}`,
+  mongoUrl: `${config.db.cs}${config.db.cn}`,
 });
 
 router.use(
@@ -124,7 +123,6 @@ router.get("/forgot-password", (req, res) => {
 
 router.post("/forgot-password", sendPasswordResetEmail);
 
-// Renderizar la página de restablecimiento de contraseña
 router.get("/reset-password/:token", (req, res) => {
   const token = req.params.token;
   res.render("reset-password", { token });
@@ -132,7 +130,6 @@ router.get("/reset-password/:token", (req, res) => {
 
 router.post("/reset-password", resetPassword);
 
-// Ruta para cambiar el rol de un usuario
 router.post("/users/updateRole/:id", updateUserRole);
 
 export default router;

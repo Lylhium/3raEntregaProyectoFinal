@@ -6,7 +6,7 @@ import {
   deleteProduct,
 } from "../controllers/product.controller.js";
 import { uploader } from "../utils/utils.js";
-import { generateProducts } from "../mocks/generateProducts.js";
+import { generateProducts } from "../../test/mocks/generateProducts.js";
 
 const router = Router();
 
@@ -27,7 +27,7 @@ router.post(
 
 router.get("/user/products", ensureAuthenticated, getUserProducts);
 
-router.get("/all-products", ensureAuthenticated, getAllProducts);
+router.get("/all-products", getAllProducts);
 
 router.post("/delete/:id", deleteProduct);
 

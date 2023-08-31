@@ -16,9 +16,7 @@ import swaggerUiExpress from "swagger-ui-express";
 // Server
 const app = express();
 const PORT = config.server;
-const server = app.listen(PORT, () => {
-  log.info(`server running on ${PORT}`);
-});
+app.listen(PORT, () => log.info(`Listening on ${PORT}`));
 
 // Middlewares
 app.use(cors());
