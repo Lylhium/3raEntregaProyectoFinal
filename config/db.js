@@ -7,7 +7,9 @@ mongoose.connect(config.db.cs, {
 });
 mongoose.plugin(mongoosePaginate);
 const db = mongoose.connection;
-db.on("error", log.error.bind(`error connecting to mongoDB`));
+db.on("error", (error) => {
+  log.error(`Error connecting to MongoDB: ${error}`);
+});
 db.once("open", () => {
   log.info(`successful connection to MongoDB.`);
 });

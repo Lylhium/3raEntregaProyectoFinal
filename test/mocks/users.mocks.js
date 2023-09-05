@@ -17,14 +17,14 @@ const usuario2 = {
 const user = {
   first_name: "testing",
   last_name: "gerez",
-  email: "test1s@gmail.com",
+  email: "cxzcxz25@gmail.com",
   password: "asdasdasd",
   age: 50,
 };
 
 const userNoName = {
-  last_name: "gerez",
-  email: "tests12@gmail.com",
+  last_name: "leonardo",
+  email: "zxczxc30@gmail.com",
   password: "asdasdasd",
   age: 50,
 };
