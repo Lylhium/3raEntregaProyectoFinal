@@ -11,6 +11,13 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ["user", "admin", "premium"], default: "user" },
   products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
   carts: [CartItem.schema],
+  documents: [
+    {
+      name: String,
+      reference: String,
+    },
+  ],
+  last_connection: Date,
 });
 
 // método para comparar contraseñas

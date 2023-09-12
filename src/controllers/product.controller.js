@@ -63,27 +63,19 @@ export const getAllProducts = async (req, res) => {
 };
 
 export const deleteProduct = async (req, res) => {
-  const productId = req.params.id; // Obtén el ID del producto desde los parámetros de la URL
-  const userId = req.user.id; // Obtén el ID del usuario actualmente autenticado
+  const productIdToDelete = req.body.productIdToDelete; // Obtén el ID del producto desde el cuerpo de la solicitud
 
   try {
     // Busca el producto por su ID
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productIdToDelete);
 
     if (!product) {
       return res.status(404).json({ message: "Producto no encontrado" });
     }
 
-    // Verifica si el usuario actual es el propietario o si es un administrador
-    if (product.owner.toString() === userId || req.user.role === "admin") {
-      // Si el usuario es el propietario o es un administrador, permite la eliminación
-      await Product.findByIdAndRemove(productId);
-      res.status(200).json({ message: "Producto eliminado con éxito" });
-    } else {
-      res
-        .status(403)
-        .json({ message: "No tienes permiso para eliminar este producto" });
-    }
+    // Elimina el producto por su ID
+    await Product.findByIdAndRemove(productIdToDelete);
+    res.status(200).json({ message: "Producto eliminado con éxito" });
   } catch (error) {
     console.error("Error al eliminar el producto:", error);
     res.status(500).json({ message: "Error al eliminar el producto" });

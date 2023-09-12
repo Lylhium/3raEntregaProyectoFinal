@@ -67,15 +67,35 @@
           <input type="hidden" name="newRole" value="user" />
           <button type="submit">Cambiar Rol a User</button>
         </form>
-
+        <!-- Agrega este código para mostrar la lista de productos del usuario -->
         <h2>Tus Productos creados:</h2>
         <ul id="user-product-list">
-          <!-- La lista de productos del usuario se llena dinámicamente. -->
+          {{#each userProducts.products}}
+            <li class="product">
+              <div class="product-title">{{this.title}}</div>
+              <div class="product-description">{{this.description}}</div>
+              <div class="product-price">$ {{this.price}}</div>
+            </li>
+          {{/each}}
         </ul>
+        <form id="delete-product-form" action="/products/delete" method="POST">
+          <label for="productIdToDelete">ID del Producto a Eliminar:</label>
+          <input type="text" name="productIdToDelete" required />
 
+          <button type="submit">Eliminar Producto</button>
+        </form>
+
+        <!-- Agrega este código para mostrar la lista de todos los productos -->
         <h2>Todos los Productos:</h2>
         <ul id="all-product-list">
-          <!-- La lista de todos los productos se llena dinámicamente. -->
+          {{#each allProducts.products}}
+            <li class="product">
+              <div class="product-title">{{this.title}}</div>
+              <div class="product-description">{{this.description}}</div>
+              <div class="product-price">$ {{this.price}}</div>
+              <div class="product-owner">Owner: {{this.owner}}</div>
+            </li>
+          {{/each}}
         </ul>
 
         <h2>Comprar Producto:</h2>
@@ -112,36 +132,38 @@
         </form>
 
         <script>
-          async function getUserProducts() { try { const response = await
-          fetch("/user/products"); const data = await response.json(); const
-          productList = document.getElementById("user-product-list");
-          productList.innerHTML = ""; data.products.forEach((product) => { const
-          listItem = document.createElement("li"); listItem.innerHTML = ` <div
+          let userProducts = []; async function getUserProducts() { try { const
+          response = await fetch("/user/products"); userProducts = await
+          response.json(); renderUserProducts(); } catch (error) {
+          console.error("Error al obtener los productos del usuario:", error); }
+          } function renderUserProducts() { const productList =
+          document.getElementById("user-product-list"); productList.innerHTML =
+          ""; userProducts.products.forEach((product) => { const listItem =
+          document.createElement("li"); listItem.innerHTML = ` <div
           class="product"> <div class="product-title">${product.title}</div>
           <div class="product-description">${product.description}</div> <div
           class="product-price">$${product.price}</div> </div> `;
-          productList.appendChild(listItem); }); } catch (error) {
-          console.error("Error al obtener los productos del usuario:", error); }
-          } window.addEventListener("DOMContentLoaded", () => {
-          getUserProducts(); });
+          productList.appendChild(listItem); }); }
+          window.addEventListener("DOMContentLoaded", () => { getUserProducts();
+          });
         </script>
-
         <script>
-          async function getAllProducts() { try { const response = await
-          fetch("/all-products"); const data = await response.json(); const
-          productList = document.getElementById("all-product-list");
-          productList.innerHTML = ""; data.products.forEach((product) => { const
-          listItem = document.createElement("li"); listItem.innerHTML = ` <div
+          let allProducts = []; async function getAllProducts() { try { const
+          response = await fetch("/all-products"); allProducts = await
+          response.json(); renderAllProducts(); } catch (error) {
+          console.error("Error al obtener los productos:", error); } } function
+          renderAllProducts() { const productList =
+          document.getElementById("all-product-list"); productList.innerHTML =
+          ""; allProducts.products.forEach((product) => { const listItem =
+          document.createElement("li"); listItem.innerHTML = ` <div
           class="product"> <div class="product-title">${product.title}</div>
           <div class="product-description">${product.description}</div> <div
           class="product-price">$${product.price}</div> <div
           class="product-owner">Owner: ${product.owner || "admin"}</div> </div>
-          `; productList.appendChild(listItem); }); } catch (error) {
-          console.error("Error al obtener los productos:", error); } }
+          `; productList.appendChild(listItem); }); }
           window.addEventListener("DOMContentLoaded", () => { getAllProducts();
           });
         </script>
-
       {{/if}}
     </div>
   </body>

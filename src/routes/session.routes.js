@@ -8,13 +8,17 @@ import {
   sendPasswordResetEmail,
   resetPassword,
   updateUserRole,
+  uploadDocument,
 } from "../controllers/user.controller.js";
 import bodyParser from "body-parser";
 import passport from "../utils/passport.js";
 import config from "../utils/config.js";
 //import log from "../../config/devLogger.js";
+import { deleteProduct } from "../controllers/product.controller.js";
+import { uploader } from "../utils/utils.js";
 
 const router = express.Router();
+
 // Configuración de middlewares
 router.use(express.json());
 router.use(bodyParser.json());
@@ -75,7 +79,15 @@ router.post(
     successRedirect: "/dashboard",
     failureRedirect: "/login",
   }),
-  (req, res, next) => {
+  async (req, res, next) => {
+    try {
+      if (req.isAuthenticated()) {
+        req.user.last_connection = new Date();
+        await req.user.save();
+      }
+    } catch (error) {
+      console.error(error);
+    }
     next();
   }
 );
@@ -92,7 +104,21 @@ router.get(
   }
 );
 
-router.get("/logout", logoutUser);
+router.get("/logout", async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      req.user.last_connection = new Date();
+      await req.user.save();
+      req.logout();
+      res.redirect("/login");
+    } catch (error) {
+      console.error(error);
+      res.redirect("/login");
+    }
+  } else {
+    res.redirect("/login");
+  }
+});
 
 router.get("/current", ensureAuthenticated, (req, res) => {
   if (req.user) {
@@ -113,6 +139,7 @@ router.get("/dashboard", ensureAuthenticated, (req, res) => {
     age: user.age,
     role: user.role,
   };
+
   res.render("dashboard", { user: userToShow });
 });
 
@@ -131,5 +158,21 @@ router.get("/reset-password/:token", (req, res) => {
 router.post("/reset-password", resetPassword);
 
 router.post("/users/updateRole/:id", updateUserRole);
+
+function isAdminOrPremium(req, res, next) {
+  const user = req.user;
+
+  if (user && (user.role === "admin" || user.role === "premium")) {
+    return next();
+  }
+  res.status(403).json({
+    message: "Acceso denegado. Solo admin o premium pueden eliminar productos.",
+  });
+}
+
+router.post("/products/delete", isAdminOrPremium, deleteProduct);
+
+// Ruta para subir documentos
+router.post("/:uid/documents", uploader.single("document"), uploadDocument);
 
 export default router;
