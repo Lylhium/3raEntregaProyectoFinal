@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <title>Administrar Usuarios</title>
+    <!-- Agrega esto en la sección de <style> en tu archivo users.handlebars -->
+    <style>
+      body { font-family: Arial, sans-serif; margin: 0; padding: 0;
+      background-color: #fafafa; } .container { max-width: 1200px; margin: 0
+      auto; padding: 20px; background-color: #ffffff; box-shadow: 0 2px 4px
+      rgba(0, 0, 0, 0.1); } h1 { color: #333333; margin-bottom: 20px; } button {
+      background-color: #3a8749; color: #ffffff; border: none; padding: 10px
+      20px; cursor: pointer; } button:hover { background-color: #1a431d; } h2 {
+      font-size: 24px; margin-top: 20px; } table { width: 100%; border-collapse:
+      collapse; } th, td { border: 1px solid #dddddd; padding: 8px; text-align:
+      left; } th { background-color: #f2f2f2; } img { max-width: 50px;
+      max-height: 50px; } /* Estilos adicionales para los nuevos atributos */
+      #user-product-list { list-style: none; padding: 0; } .product { border:
+      1px solid #ddd; border-radius: 4px; padding: 10px; margin-bottom: 10px;
+      background-color: #f9f9f9; display: flex; justify-content: space-between;
+      align-items: center; } .product-title { font-weight: bold; }
+      .product-description { padding-left: 5px; flex: 2; margin-right: 10px; }
+      .product-price { font-weight: bold; color: #3a8749; }
+    </style>
+
+  </head>
+  <body>
+    <h1>Administrar Usuarios</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Rol</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each users}}
+          <tr>
+            <td>{{this.first_name}} {{this.last_name}}</td>
+            <td>{{this.email}}</td>
+            <td>{{this.role}}</td>
+            <td>
+              <a href="/admin/users/edit/{{this._id}}">Editar Rol</a>
+              <a href="/admin/users/delete/{{this._id}}">Eliminar Usuario</a>
+            </td>
+          </tr>
+        {{/each}}
+
+      </tbody>
+    </table>
+  </body>
+</html>

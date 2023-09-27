@@ -1,0 +1,14 @@
+<!-- Vista "edit-user-role.handlebars" -->
+{{#if user}}
+  <h1>Editar Rol de Usuario</h1>
+  <p>Usuario: {{user.first_name}} {{user.last_name}}</p>
+  <form action="/admin/users/updateRole/{{user.id}}" method="POST">
+    <label for="newRole">Nuevo Rol:</label>
+    <select name="newRole" id="newRole">
+      <option value="admin">Admin</option>
+      <option value="premium">Premium</option>
+      <option value="user">User</option>
+    </select>
+    <button type="submit">Guardar Cambios</button>
+  </form>
+{{/if}}

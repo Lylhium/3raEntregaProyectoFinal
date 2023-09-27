@@ -16,6 +16,8 @@ import config from "../utils/config.js";
 //import log from "../../config/devLogger.js";
 import { deleteProduct } from "../controllers/product.controller.js";
 import { uploader } from "../utils/utils.js";
+import User from "../models/user.schema.js";
+import moment from "moment/moment.js";
 
 const router = express.Router();
 
@@ -174,5 +176,130 @@ router.post("/products/delete", isAdminOrPremium, deleteProduct);
 
 // Ruta para subir documentos
 router.post("/:uid/documents", uploader.single("document"), uploadDocument);
+
+router.get("/users", isAdmin, async (req, res) => {
+  try {
+    const users = await User.find(
+      {},
+      { first_name: 1, last_name: 1, email: 1, role: 1 }
+    );
+
+    if (!users) {
+      return res.status(404).json({ message: "No se encontraron usuarios." });
+    }
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error al obtener usuarios:", error);
+    res.status(500).json({ message: "Error al obtener usuarios." });
+  }
+});
+
+router.delete("/", isAdmin, async (req, res) => {
+  try {
+    const twoDaysAgo = moment().subtract(2, "days").toDate();
+
+    const deletedUsers = await User.deleteMany({
+      last_connection: { $lt: twoDaysAgo },
+    });
+
+    res.status(200).json({
+      message: `Se eliminaron ${deletedUsers.deletedCount} usuarios inactivos.`,
+    });
+  } catch (error) {
+    console.error("Error al eliminar usuarios inactivos:", error);
+    res.status(500).json({ message: "Error al eliminar usuarios inactivos." });
+  }
+});
+
+router.get("/admin/users", isAdmin, async (req, res) => {
+  try {
+    const users = await User.find(
+      {},
+      { first_name: 1, last_name: 1, email: 1, role: 1 }
+    ).lean();
+
+    if (!users) {
+      return res.status(404).json({ message: "No se encontraron usuarios." });
+    }
+
+    res.render("users", { users });
+  } catch (error) {
+    console.error("Error al obtener usuarios:", error);
+    res.status(500).json({ message: "Error al obtener usuarios." });
+  }
+});
+
+// Ruta para editar el rol de un usuario por su ID
+router.get("/admin/users/edit/:id", isAdmin, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    const userToSend = {
+      id: user.id,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      age: user.age,
+      role: user.role,
+    };
+
+    res.render("edit-user-role", { user: userToSend });
+  } catch (error) {
+    console.error("Error al obtener el usuario:", error);
+    res.status(500).json({ message: "Error al obtener el usuario." });
+  }
+});
+
+router.post("/admin/users/updateRole/:id", isAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { newRole } = req.body;
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      id,
+      { role: newRole },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    res.status(200).json({
+      message: `Se actualizó el rol de ${user.first_name} a ${newRole}.`,
+    });
+  } catch (error) {
+    console.error("Error al actualizar el rol del usuario:", error);
+    res
+      .status(500)
+      .json({ message: "Error al actualizar el rol del usuario." });
+  }
+});
+
+router.get("/admin/users/delete/:id", isAdmin, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findByIdAndRemove(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    res
+      .status(200)
+      .json({ message: `Usuario ${user.first_name} eliminado correctamente.` });
+  } catch (error) {
+    console.error("Error al eliminar el usuario:", error);
+    res.status(500).json({ message: "Error al eliminar el usuario." });
+  }
+});
 
 export default router;

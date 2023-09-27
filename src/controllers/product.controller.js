@@ -1,6 +1,7 @@
 import Product from "../models/product.schema.js";
 import User from "../models/user.schema.js";
-
+import nodemailer from "nodemailer";
+import transporter from "../utils/mailer.js";
 export const createProduct = async (req, res) => {
   const { title, description, price } = req.body;
 
@@ -63,7 +64,7 @@ export const getAllProducts = async (req, res) => {
 };
 
 export const deleteProduct = async (req, res) => {
-  const productIdToDelete = req.body.productIdToDelete; // Obtén el ID del producto desde el cuerpo de la solicitud
+  const productIdToDelete = req.body.productIdToDelete;
 
   try {
     // Busca el producto por su ID
@@ -73,7 +74,17 @@ export const deleteProduct = async (req, res) => {
       return res.status(404).json({ message: "Producto no encontrado" });
     }
 
-    // Elimina el producto por su ID
+    if (req.user.role === "premium") {
+      // Envía un correo al usuario premium informando que su producto fue eliminado
+      const mailOptions = {
+        from: "pfarherra@gmail.com",
+        subject: "Producto eliminado",
+        html: `<p>Hola ${req.user.first_name},</p><p>Tu producto "${product.title}" ha sido eliminado por un administrador</p>`,
+      };
+
+      await transporter.sendMail(mailOptions);
+    }
+
     await Product.findByIdAndRemove(productIdToDelete);
     res.status(200).json({ message: "Producto eliminado con éxito" });
   } catch (error) {
